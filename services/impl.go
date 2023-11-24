@@ -10,6 +10,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"sync"
 )
 
 func New(store store.Store) Service {
@@ -23,16 +24,35 @@ type formServ struct {
 }
 
 func (s *formServ) Create(req map[string]string) (model.ConvertedRequest, error) {
-	//create the channel for request
-	model.RequestChannel <- req
 
-	form, err := s.worker(model.RequestChannel)
-	if err != nil {
-		fmt.Println("Error converting numeric part to integer:", err)
-		return model.ConvertedRequest{}, err
-	}
+	// Use a wait group to wait for goroutines to finish
+	var wg sync.WaitGroup
+	var forms = model.ConvertedRequest{}
 
-	return form, nil
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		// Send the map through the channel
+		model.RequestChannel <- req
+	}()
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+
+		// Receive the map from the channel
+		form, err := s.worker(model.RequestChannel)
+		if err != nil {
+			fmt.Println("Error converting numeric part to integer:", err)
+		}
+		forms = form
+	}()
+
+	wg.Wait()
+
+	//close(model.RequestChannel)
+
+	return forms, nil
 }
 
 func (s *formServ) worker(req chan map[string]string) (model.ConvertedRequest, error) {
