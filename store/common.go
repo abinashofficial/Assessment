@@ -1,5 +1,7 @@
 package store
 
+import "Assessment/store/forms"
+
 type Store struct {
-	FormsRepo Repository
+	FormsRepo forms.Repository
 }

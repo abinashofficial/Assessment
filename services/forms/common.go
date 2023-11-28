@@ -1,4 +1,4 @@
-package services
+package forms
 
 type Store struct {
 	FormServ Service

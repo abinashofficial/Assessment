@@ -1,8 +1,7 @@
-package services
+package forms
 
 import (
 	"Assessment/model"
-	"Assessment/store"
 	"Assessment/utils"
 	"bytes"
 	"encoding/json"
@@ -10,52 +9,9 @@ import (
 	"io"
 	"net/http"
 	"strconv"
-	"sync"
 )
 
-func New(store store.Store) Service {
-	return &formServ{
-		formsRepo: store.FormsRepo,
-	}
-}
-
-type formServ struct {
-	formsRepo store.Repository
-}
-
-func (s *formServ) Create(req map[string]string) (model.ConvertedRequest, error) {
-
-	// Use a wait group to wait for goroutines to finish
-	var wg sync.WaitGroup
-	var forms = model.ConvertedRequest{}
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		// Send the map through the channel
-		model.RequestChannel <- req
-	}()
-
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-
-		// Receive the map from the channel
-		form, err := s.worker(model.RequestChannel)
-		if err != nil {
-			fmt.Println("Error converting numeric part to integer:", err)
-		}
-		forms = form
-	}()
-
-	wg.Wait()
-
-	//close(model.RequestChannel)
-
-	return forms, nil
-}
-
-func (s *formServ) worker(req chan map[string]string) (model.ConvertedRequest, error) {
+func worker(req chan map[string]string) (model.ConvertedRequest, error) {
 
 	// Receive requests from the channel
 	receivedData := <-req

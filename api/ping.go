@@ -1,8 +1,8 @@
 package api
 
 import (
-	"Assessment/loged"
-	_ "Assessment/loged"
+	"Assessment/log"
+	_ "Assessment/log"
 	"Assessment/tapcontext"
 	"Assessment/utils"
 	"bufio"
@@ -51,7 +51,7 @@ func GetGitVersion(w http.ResponseWriter, r *http.Request) {
 
 	file, err := os.Open("./.git/version")
 	if err != nil {
-		loged.GenericInfo(ctx, functionDesc, loged.FieldsMap{"err": err.Error()})
+		log.GenericInfo(ctx, functionDesc, log.FieldsMap{"err": err.Error()})
 		utils.ErrorResponse(ctx, w, err.Error(), http.StatusInternalServerError, err, nil)
 		return
 	}
@@ -63,12 +63,12 @@ func GetGitVersion(w http.ResponseWriter, r *http.Request) {
 		break
 	}
 	if err = scanner.Err(); err != nil {
-		loged.GenericInfo(ctx, functionDesc, loged.FieldsMap{"err": err.Error()})
+		log.GenericInfo(ctx, functionDesc, log.FieldsMap{"err": err.Error()})
 		utils.ErrorResponse(ctx, w, err.Error(), http.StatusInternalServerError, err, nil)
 		return
 	}
 	utils.ReturnResponse(w, http.StatusOK, version)
-	loged.GenericInfo(ctx, functionDesc, loged.FieldsMap{"msg": "Success", "version": version})
+	log.GenericInfo(ctx, functionDesc, log.FieldsMap{"msg": "Success", "version": version})
 }
 
 func MqttKey(w http.ResponseWriter, r *http.Request) {
@@ -83,6 +83,6 @@ func MqttKey(w http.ResponseWriter, r *http.Request) {
 	}
 
 	utils.ReturnResponse(w, http.StatusOK, response)
-	loged.GenericInfo(ctx, functionDesc, loged.FieldsMap{"msg": "Success"})
+	log.GenericInfo(ctx, functionDesc, log.FieldsMap{"msg": "Success"})
 	context.Background()
 }

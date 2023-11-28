@@ -1,4 +1,4 @@
-package handlers
+package forms
 
 type Store struct {
 	FormHandler FormHandlers

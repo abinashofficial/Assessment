@@ -1,14 +1,14 @@
 package app
 
 import (
-	"Assessment/handlers"
+	"Assessment/handlers/forms"
 	"fmt"
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 )
 
-func runServer(envPort string, h handlers.Store) {
+func runServer(envPort string, h forms.Store) {
 	r := mux.NewRouter()
 	r.HandleFunc("/public/forms", h.FormHandler.HandlerCreate).Methods(http.MethodPost)
 

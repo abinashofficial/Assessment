@@ -1,4 +1,4 @@
-package loged
+package log
 
 import (
 	"encoding/json"

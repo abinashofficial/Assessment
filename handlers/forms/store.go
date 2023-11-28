@@ -1,23 +1,23 @@
-package handlers
+package forms
 
 import (
-	"Assessment/loged"
+	"Assessment/log"
 	"Assessment/model"
-	"Assessment/services"
+	"Assessment/services/forms"
 	"Assessment/tapcontext"
 	"Assessment/utils"
 	"encoding/json"
 	"net/http"
 )
 
-func New(service services.Store) FormHandlers {
+func New(service forms.Store) FormHandlers {
 	return &formHandler{
 		formServ: service.FormServ,
 	}
 }
 
 type formHandler struct {
-	formServ services.Service
+	formServ forms.Service
 }
 
 func (h formHandler) HandlerCreate(w http.ResponseWriter, r *http.Request) {
@@ -34,18 +34,18 @@ func (h formHandler) HandlerCreate(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		loged.GenericInfo(ctx, functionDesc, loged.FieldsMap{"errMsg": err})
+		log.GenericInfo(ctx, functionDesc, log.FieldsMap{"errMsg": err})
 		utils.ErrorResponse(ctx, w, err.Error(), http.StatusInternalServerError, err, nil)
 		return
 	}
 
 	form, err = h.formServ.Create(req)
 	if err != nil {
-		loged.GenericInfo(ctx, functionDesc, loged.FieldsMap{"errMsg": err})
+		log.GenericInfo(ctx, functionDesc, log.FieldsMap{"errMsg": err})
 		utils.ErrorResponse(ctx, w, err.Error(), http.StatusInternalServerError, err, nil)
 		return
 	}
 
 	utils.ReturnResponse(w, http.StatusOK, form)
-	loged.GenericInfo(ctx, functionDesc, loged.FieldsMap{"message": "Success", "forms": ""})
+	log.GenericInfo(ctx, functionDesc, log.FieldsMap{"message": "Success", "forms": ""})
 }

@@ -53,16 +53,9 @@ func UpgradeCtx(ctx context.Context) TContext {
 	return tContext
 }
 
-//// ClearHandler wraps an http.Handler and clears request values at the end
-//// of a request lifetime.
-//func ClearHandler(h http.Handler) http.Handler {
-//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//		defer Clear(r)
-//		h.ServeHTTP(w, r)
-//	})
-//}
-
-// WithTapCtx returns a new context with the tap context provided
-func WithTapCtx(ctx context.Context, tapctx TapContext) context.Context {
-	return context.WithValue(ctx, TAPCtx, tapctx)
+func NewTapContext() TContext {
+	return TContext{
+		Context:    context.Background(),
+		TapContext: TapContext{},
+	}
 }

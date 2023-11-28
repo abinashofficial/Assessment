@@ -1,4 +1,4 @@
-package services
+package forms
 
 import "Assessment/model"
 

@@ -1,4 +1,4 @@
-package handlers
+package forms
 
 import "net/http"
 

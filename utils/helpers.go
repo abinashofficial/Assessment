@@ -2,12 +2,15 @@ package utils
 
 import (
 	"Assessment/consts"
-	"Assessment/loged"
+	"Assessment/log"
 	"Assessment/tapcontext"
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"reflect"
+	"strings"
+	"time"
 )
 
 var supportedLang = []string{"en", "fr"}
@@ -42,11 +45,11 @@ func GetError(msg string, lang string) string {
 func GetEnv(ctx tapcontext.TContext, key string, logValue ...bool) string {
 	value, ok := os.LookupEnv(key)
 	if !ok {
-		loged.GenericError(ctx, errors.New("key not found"), loged.FieldsMap{"key": key})
+		log.GenericError(ctx, errors.New("key not found"), log.FieldsMap{"key": key})
 	}
 	if len(logValue) > 0 {
 		if logValue[0] {
-			loged.GenericInfo(ctx, "Value Found", loged.FieldsMap{"key": key, "value": value})
+			log.GenericInfo(ctx, "Value Found", log.FieldsMap{"key": key, "value": value})
 		}
 	}
 	return value
@@ -99,4 +102,20 @@ func SplitNumericAndNonNumeric(input string) (numericPart, nonNumericPart string
 	numericPart = string(numericChars)
 	nonNumericPart = string(nonNumericChars)
 	return numericPart, nonNumericPart
+}
+
+func CurrentMillis() int {
+	return int(time.Now().UnixNano() / 1e6)
+}
+
+func GetCurrentBranchName() string {
+	cmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+	output, err := cmd.Output()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return ""
+	}
+
+	branch := strings.TrimSpace(string(output))
+	return branch
 }
