@@ -1,0 +1,16 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a microservice for managing services, vendors, and bookings.",
+        "title": "BRB Mid Service Platform API",
+        "contact": {
+            "name": "API Support",
+            "url": "http://www.brb.com/support",
+            "email": "support@brb.com"
+        },
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/",
+    "paths": {}
+}
