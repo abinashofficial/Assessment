@@ -14,7 +14,7 @@ func main() {
 
 	var runUnitTests bool
 
-	flag.BoolVar(&runUnitTests, "runUnitTests", true, "Setting to true will run unit tests")
+	flag.BoolVar(&runUnitTests, "runUnitTests", false, "Setting to true will run unit tests")
 	flag.Parse()
 
 	if runUnitTests {

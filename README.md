@@ -12,6 +12,7 @@ It covers:
 - Basic retry handler and rate limiter
 - Pagination for customer booking lists
 - Docker-based deployment
+- Unit Test Cases
 
 ---
 
@@ -43,16 +44,38 @@ It contains:
     Example payloads
 
 
-⚙️ API Endpoints Overview
+📌 API Endpoints Overview
+Base URL: http://localhost:8080/api
 
-Method  | Endpoint                                  | Description
+🧠 Health Check
 
-POST    | /services                                 | Create new service
-PUT     | /services/:id                             | Update service
-POST    | /vendors/:vendor_id/services/:service_id  | Link service to vendor
-PATCH   | /services/:id/availability                | Toggle service availability
-POST    | /bookings                                 | Book a service
-GET     | /bookings/customer/:customer_id           | Get bookings (paginated)
-GET     | /summary/vendor/:vendor_id                | Booking summary by vendor
-GET     | /health                                   | Health check
+Method	Endpoint	Description
+GET	    /health	    Check DB health
+
+🔧 Services (Admin Only)
+
+Method	Endpoint	            Description
+POST	/services/	            Create a service
+PUT	    /services/:id	        Update a service
+PATCH	/services/:id/toggle	Toggle service status
+
+🏢 Vendors (Admin Only)
+
+Method	Endpoint	Description
+POST	/vendors/	Create a vendor
+
+📅 Bookings
+
+Method	Endpoint	Description
+POST	/bookings/	Create a booking
+GET	    /bookings/	List all bookings
+
+📊 Summary (Admin Only)
+
+Method	Endpoint	            Description
+GET	    /summary/vendor/:id	    Vendor booking summary
+
+📚 Swagger Docs
+View API documentation: http://localhost:8080/swagger/index.html
+
 
