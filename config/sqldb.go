@@ -1,40 +1,52 @@
 package config
 
 import (
-    "gorm.io/driver/postgres"
-    "gorm.io/gorm"
-    "os"
-    "Assessment/models"
-    "log"
-    "fmt"
+	"Assessment/model"
+	"fmt"
+	"log"
+	"os"
+    "github.com/gin-gonic/gin"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-func InitDB() (*gorm.DB, error) {
-    dsn := fmt.Sprintf(
-        "host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-        os.Getenv("DB_HOST"),
-        os.Getenv("DB_USER"),
-        os.Getenv("DB_PASSWORD"),
-        os.Getenv("DB_NAME"),
-        os.Getenv("DB_PORT"),
-    )
-    if dsn == "" {
-        dsn = "host=localhost user=postgres password=love dbname=postgres port=5432 sslmode=disable"
-    }
-    db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-    if err != nil {
-        return nil, err
-    }
+func SetupDatabase() *gorm.DB {
+	dbHost := os.Getenv("DB_HOST")
+	dbUser := os.Getenv("DB_USER")
+	dbPassword := os.Getenv("DB_PASSWORD")
+	dbName := os.Getenv("DB_NAME")
+	dbPort := os.Getenv("DB_PORT")
 
-        // Auto migrate tables
-        err = db.AutoMigrate(
-            &models.User{},
-            &models.Vendor{},
-            &models.Service{},
-            &models.Booking{},
-        )
-        if err != nil {
-            log.Fatal("Failed to auto-migrate database: ", err)
-        }
-    return db, nil
+	dsn := fmt.Sprintf(
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		dbHost, dbUser, dbPassword, dbName, dbPort,
+	)
+
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if err != nil {
+		log.Fatalf("Failed to connect to DB: %v", err)
+	}
+
+  // Correct order: Vendor first, then Service
+  err = db.AutoMigrate(
+    &model.Vendor{},
+    &model.Service{},
+    &model.Booking{},
+)
+if err != nil {
+    log.Fatal("Failed auto migration:", err)
+}
+
+	return db
+}
+
+func HealthCheck(db *gorm.DB) func(c *gin.Context) {
+	return func(c *gin.Context) {
+		sqlDB, err := db.DB()
+		if err != nil || sqlDB.Ping() != nil {
+			c.JSON(500, gin.H{"status": "Database Connection Error"})
+			return
+		}
+		c.JSON(200, gin.H{"status": "OK"})
+	}
 }
